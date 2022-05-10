@@ -1,0 +1,26 @@
+dataBlock {
+    int a;
+    int b;
+    int c;
+    int d;
+}
+mainBlock {
+
+    scan(int, a);
+    scan(int, b);
+    scan(int, c);
+    scan(int, d);
+
+    c = a + b;
+    b = c - a;
+    a = b / c;
+    d = a * b;
+
+    if(a == b){
+        print(a);
+    }
+    if(b != c){
+        print(b);
+    }
+
+}
