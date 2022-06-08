@@ -1,7 +1,6 @@
 package crick;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +8,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Main {
+
+    public static boolean containString(List<String> lista, String a){
+        for(String aux : lista){
+            if(aux.equals(a)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static void main(String[] args) throws IOException {
 
@@ -79,7 +87,6 @@ public class Main {
                                     estado = 23;
                                 }else if((c=='(')||(c==')')||(c=='{')||(c=='}')||(c==';')||(c==',')||(c=='"')||(c==':')){
                                     lexeme = lexeme + c;
-                                    System.out.println("--- "+lexeme);
                                     Lexema l = new Lexema("symbol",lexeme,contLinha);
                                     lexemes.add(l);
                                     lexeme = "";
@@ -235,12 +242,98 @@ public class Main {
             linha = buffRead.readLine();
             contLinha++;
         }
-        for(Lexema l : lexemes){
-            System.out.println(l);
-        }
+//        for(Lexema l : lexemes){
+//            System.out.println(l);
+//        }
         buffRead.close();
 
         //ANÁLISE SINTÁTICA-------------------------------------------------------
+
+        //Leitura da gramática
+
+        List<Estado> estados = new ArrayList<>();
+
+        BufferedReader buffRead1 = new BufferedReader(new FileReader("src/crick/gramatica.txt"));
+//        BufferedReader buffRead1 = new BufferedReader(new FileReader("src/crick/teste.txt"));
+        linha = "";
+
+        while (true) {
+            if (linha != null) {
+//                System.out.println(linha);
+                String[] output = linha.split("->");
+                String[] outputEsq = new String[]{};
+                String[] outputProd= new String[]{};
+                String esquerdo="";
+                List<String> prodEsq = new ArrayList<>();
+                for(int i=0; i<output.length; i++){
+                    if(i==0){
+                        outputEsq = output[0].split(" ");
+                        esquerdo=outputEsq[0];
+                    }else if(i==1){
+                        outputProd = output[1].split(" ");
+                        for(int j=0; j<outputProd.length; j++){
+                            String aux = outputProd[j];
+                            prodEsq.add(aux);
+                        }
+                    }
+                }
+
+                boolean achou=false;
+                for(Estado aux : estados){
+                    if(aux.NTerminal.equals(esquerdo)){
+                        aux.producoes.add(prodEsq);
+                        achou=true;
+                    }
+                }
+
+                if(achou==false){
+                    Estado a = new Estado();
+                    a.NTerminal=esquerdo;
+                    a.producoes.add(prodEsq);
+                    estados.add(a);
+                }
+
+            }else
+                break;
+            linha = buffRead1.readLine();
+        }
+        buffRead1.close();
+
+        estados.remove(0);
+
+        //Calculo dos first-----------------
+
+        //LIsta com os não terminais da gramática
+        List<String> nTerminais = new ArrayList<>();
+        for(Estado a: estados){
+            nTerminais.add(a.NTerminal);
+        }
+
+        //Limpa espaços criados na leitura da gramática
+        for(Estado a : estados){
+            a.limpaProd();
+        }
+
+
+
+        for(Estado atual : estados){
+            System.out.println(atual.NTerminal+"----------------");
+            for(List<String> p : atual.producoes){
+//                int cont = 0;
+//                //Se é terminal
+//                if(!nTerminais.contains(p.get(cont))){
+//                    System.out.println("entrou aqui");
+//
+//                    atual.first.add(p.get(cont));
+//                }else{
+//
+//                }
+            }
+        }
+
+//        for(Estado a: estados){
+//            a.printFF();
+//        }
 
     }
 }
